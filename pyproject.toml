@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "licenses"
+version = "0.1.0"
+description = "Small website to download LICENSE.txt files from"
+authors = ["Nachtalb <na@nachtalb.io>"]
+license = "LGPL-3.0-or-later"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+uvicorn = {extras = ["standard"], version = "^0.21.1"}
+fastapi = "^0.95.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
