@@ -70,6 +70,7 @@ function loadLicenseFromUrlFragment() {
 }
 
 window.addEventListener("DOMContentLoaded", loadLicenseFromUrlFragment)
+window.addEventListener("hashchange", loadLicenseFromUrlFragment)
 
 function copyToClipboard(text) {
   navigator.clipboard.writeText(text).then(

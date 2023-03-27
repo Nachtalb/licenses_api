@@ -73,13 +73,13 @@
         </div>
       </div>
       <h1>Software License API</h1>
-      <p>Explore and interact with available software licenses:</p>
+      <p>Explore and interact with available software licenses. <a href="/docs">API Documentation</a></p>
       <div class="mb-3">
         <label for="license-select" class="form-label">Select a license:</label>
         <select class="form-select" id="license-select">
           <option selected>Choose...</option>
           {% for license in licenses %}
-          <option value="{{ license.spdx_id }}">{{ license.title }}</option>
+          <option value="{{ license.spdx_id | lower }}">{{ license.title }}</option>
           {% endfor %}
         </select>
       </div>
