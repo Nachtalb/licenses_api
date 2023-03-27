@@ -10,6 +10,9 @@ async function loadLicenseDetails(spdxId) {
   document.getElementById("api-license-raw-link").href = `/licenses/${spdxId}/raw`
   document.getElementById("license-spdx").textContent = license["spdx-id"]
   document.getElementById("license-title").textContent = license.title
+  document.getElementById(
+    "license-curl"
+  ).textContent = `curl http://${window.location.host}/licenses/${spdxId}/raw -o LICENSE`
   document.getElementById("license-description").innerHTML = license.description
   document.getElementById("license-how").innerHTML = license.how
   const nicknameElement = document.getElementById("license-nickname")

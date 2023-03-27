@@ -11,7 +11,7 @@ body {
 }
 
 .copy:hover {
-  text-shadow: 0 0 1px;
+  text-shadow: 0 0 2px;
 }
 
 .dropdown-menu {
@@ -28,4 +28,8 @@ body {
 svg path {
   --bs-text-opacity: 1;
   fill: rgba(var(--bs-body-color-rgb), var(--bs-text-opacity)) !important;
+}
+
+#license-curl {
+  word-break: break-all;
 }
