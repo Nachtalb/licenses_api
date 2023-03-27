@@ -163,6 +163,32 @@
         <a href="https://github.com/github/choosealicense.com" target="_blank">choosealicense.com</a>
       </p>
     </footer>
+
+    <div
+      id="successToast"
+      class="toast m-3 end-0 position-fixed top-0"
+      role="alert"
+      aria-live="assertive"
+      aria-atomic="true"
+    >
+      <div class="d-flex">
+        <div class="toast-body">Copied to clipboard successfully.</div>
+        <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>
+
+    <div
+      id="errorToast"
+      class="toast m-3 end-0 position-fixed top-0 text-bg-danger"
+      role="alert"
+      aria-live="assertive"
+      aria-atomic="true"
+    >
+      <div class="d-flex">
+        <div class="toast-body">Failed to copy to clipboard.</div>
+        <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>
     <script src="/static/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="/static/bootstrap/theme.js"></script>
     <script src="/static/main.js"></script>

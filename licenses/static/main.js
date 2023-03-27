@@ -79,9 +79,11 @@ function copyToClipboard(text) {
   navigator.clipboard.writeText(text).then(
     () => {
       console.log("Copied to clipboard successfully.")
+      showToast("successToast")
     },
     () => {
       console.error("Failed to copy to clipboard.")
+      showToast("errorToast")
     }
   )
 }
@@ -96,3 +98,8 @@ document.getElementById("copy-license-content").addEventListener("click", () => 
   const licenseContent = document.getElementById("license-raw-content").textContent
   copyToClipboard(licenseContent)
 })
+
+function showToast(toastId) {
+  const toastElement = new bootstrap.Toast(document.getElementById(toastId))
+  toastElement.show()
+}
