@@ -1,8 +1,10 @@
+import io
 from pathlib import Path
 
-from fastapi import FastAPI, HTTPException
-from fastapi.responses import HTMLResponse, PlainTextResponse
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import HTMLResponse, PlainTextResponse, FileResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel, Field, validator
 from ruamel.yaml import YAML
 
@@ -27,18 +29,22 @@ class License(BaseModel):
     limitations: list[str] = Field(..., description="List of limitations imposed by the license")
     content: str = Field(..., description="The full license text")
 
-    @validator("using", pre=True, always=True)
-    def set_using_default(cls, value):
-        return value or {}
+    @validator("*", pre=True, always=True)
+    def set_using_default(cls, value, field):
+        if field.name == "using":
+            return value or {}
+        elif field.name in ["permissions", "conditions", "limitations"]:
+            return value or []
+        return value
 
 
 def load_licenses() -> dict:
     yaml = YAML()
     licenses = {}
     for license_path in HERE.glob("licenses/*.txt"):
-        file_content = license_path.read_text().split("---")
+        file_content = license_path.read_text().split("---", 2)
         license_data = yaml.load(file_content[1])
-        license_data["content"] = file_content[2]
+        license_data["content"] = file_content[2].strip()
         license = License(**license_data)
         licenses[license.spdx_id.lower()] = license
     return licenses
@@ -49,16 +55,20 @@ licenses = load_licenses()
 app = FastAPI()
 
 app.mount("/static", StaticFiles(directory=HERE / "static"), name="static")
-app = FastAPI()
+
+
+templates = Jinja2Templates(directory=HERE / "public")
 
 
 @app.get("/", response_class=HTMLResponse)
-def index() -> str:
+def index(request: Request):
     """
     Serve the website's front page, which provides an interactive interface
     for users to explore and interact with the available software licenses.
     """
-    return (HERE / "public/index.html").read_text()
+    return templates.TemplateResponse(
+        "index.html", {"request": request, "licenses": sorted(licenses.values(), key=lambda i: i.spdx_id)}
+    )
 
 
 @app.get("/licenses")
@@ -89,8 +99,8 @@ def get_license(spdx_id: str) -> License:
     return licenses[spdx_id]
 
 
-@app.get("/licenses/{spdx_id}/raw", response_class=PlainTextResponse)
-def get_license_content(spdx_id: str) -> str:
+@app.get("/licenses/{spdx_id}/raw")
+def get_license_content(spdx_id: str) -> StreamingResponse:
     """
     Retrieve the raw content of a specific software license by its SPDX ID.
 
@@ -106,4 +116,14 @@ def get_license_content(spdx_id: str) -> str:
     spdx_id = spdx_id.lower()
     if spdx_id not in licenses:
         raise HTTPException(status_code=404, detail="License not found")
-    return licenses[spdx_id].content
+    license = licenses[spdx_id]
+    filename = f"{license.spdx_id}.txt"
+
+    def iter_content():
+        yield license.content
+
+    return StreamingResponse(
+        iter_content(),
+        media_type="text/plain",
+        headers={"Content-Disposition": f"attachment; filename={filename}"},
+    )
