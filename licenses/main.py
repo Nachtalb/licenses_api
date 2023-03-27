@@ -1,3 +1,10 @@
+__author__ = "Nachtalb <na@nachtalb.io>"
+__maintainer__ = "Nachtalb"
+__email__ = "na@nachtalb.io"
+__version__ = "0.1.0"
+__repository__ = "https://github.com/Nachtalb/licenses_api"
+__license__ = "LGPL 3.0"
+
 import io
 from pathlib import Path
 
@@ -127,3 +134,31 @@ def get_license_content(spdx_id: str) -> StreamingResponse:
         media_type="text/plain",
         headers={"Content-Disposition": f"attachment; filename={filename}"},
     )
+
+
+def custom_openapi():
+    if app.openapi_schema:
+        return app.openapi_schema
+    openapi_schema = get_openapi(
+        title="License API",
+        version=__version__,
+        description=(
+            "An API for retrieving software license information, including SPDX ID, permissions, conditions,"
+            " limitations, raw content and more."
+        ),
+        contact={
+            "name": __maintainer__,
+            "email": __email__,
+            "url": __repository__ + "/issues",
+        },
+        license_info={
+            "name": "LGPL 3.0",
+            "url": "https://www.gnu.org/licenses/lgpl-3.0.en.html",
+        },
+        routes=app.routes,
+    )
+    app.openapi_schema = openapi_schema
+    return app.openapi_schema
+
+
+app.openapi = custom_openapi
