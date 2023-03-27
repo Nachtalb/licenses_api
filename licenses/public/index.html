@@ -14,6 +14,14 @@
       #license-raw-content {
         max-height: 500px;
       }
+
+      .copy {
+        cursor: pointer;
+      }
+
+      .copy:hover {
+        text-shadow: 0 0 1px;
+      }
     </style>
   </head>
   <body>
@@ -48,17 +56,17 @@
                 <ul id="license-limitations"></ul>
               </div>
             </div>
-            <pre id="license-raw-content"></pre>
+            <pre id="license-raw-content" class="border p-2"></pre>
           </div>
           <div class="col col-md-3">
             <div class="row mb-3">
-              <div class="col col-12 col-xl-6" id="license-nickname-container">
-                Nickname:
-                <code id="license-nickname" class="copy"></code>
-              </div>
               <div class="col col-12 col-xl-6">
                 SPDX:
-                <code id="license-spdx" class="copy"></code>
+                <code id="license-spdx" class="copy" title="Copy SPDX"></code>
+              </div>
+              <div class="col col-12 col-xl-6" id="license-nickname-container">
+                Nickname:
+                <code id="license-nickname" class="copy" title="Copy nickname"></code>
               </div>
             </div>
             <h5>Links</h5>
@@ -82,105 +90,105 @@
     </div>
     <script>
       async function loadLicenseDetails(spdxId) {
-        const response = await fetch(`/licenses/${spdxId}`);
+        const response = await fetch(`/licenses/${spdxId}`)
         if (!response.ok) {
-          console.error("Error fetching license details:", response.status);
-          return;
+          console.error("Error fetching license details:", response.status)
+          return
         }
-        const license = await response.json();
+        const license = await response.json()
 
-        document.getElementById("api-license-link").href = `/licenses/${spdxId}`;
-        document.getElementById("api-license-raw-link").href = `/licenses/${spdxId}/raw`;
-        document.getElementById("license-spdx").textContent = license["spdx-id"];
-        document.getElementById("license-title").textContent = license.title;
-        document.getElementById("license-description").innerHTML = license.description;
-        document.getElementById("license-how").innerHTML = license.how;
-        const nicknameElement = document.getElementById("license-nickname");
-        const nicknameContainer = document.getElementById("license-nickname-container");
+        document.getElementById("api-license-link").href = `/licenses/${spdxId}`
+        document.getElementById("api-license-raw-link").href = `/licenses/${spdxId}/raw`
+        document.getElementById("license-spdx").textContent = license["spdx-id"]
+        document.getElementById("license-title").textContent = license.title
+        document.getElementById("license-description").innerHTML = license.description
+        document.getElementById("license-how").innerHTML = license.how
+        const nicknameElement = document.getElementById("license-nickname")
+        const nicknameContainer = document.getElementById("license-nickname-container")
         if (license.nickname) {
-          nicknameElement.textContent = license.nickname;
-          nicknameContainer.style.display = "block";
+          nicknameElement.textContent = license.nickname
+          nicknameContainer.style.display = "block"
         } else {
-          nicknameContainer.style.display = "none";
+          nicknameContainer.style.display = "none"
         }
-        const noteElement = document.getElementById("license-note");
-        const noteContainer = document.getElementById("license-note-container");
+        const noteElement = document.getElementById("license-note")
+        const noteContainer = document.getElementById("license-note-container")
         if (license.note) {
-          noteElement.innerHTML = license.note;
-          noteContainer.style.display = "block";
+          noteElement.innerHTML = license.note
+          noteContainer.style.display = "block"
         } else {
-          noteContainer.style.display = "none";
+          noteContainer.style.display = "none"
         }
-        const usingElement = document.getElementById("license-using");
-        const usingContainer = document.getElementById("license-using-container");
+        const usingElement = document.getElementById("license-using")
+        const usingContainer = document.getElementById("license-using-container")
         if (Object.keys(license.using).length) {
           usingElement.innerHTML = Object.entries(license.using)
             .map(([name, url]) => `<li><a href="${url}">${name}</a></li>`)
-            .join("");
-          usingContainer.style.display = "block";
+            .join("")
+          usingContainer.style.display = "block"
         } else {
-          usingContainer.style.display = "none";
+          usingContainer.style.display = "none"
         }
         document.getElementById("license-permissions").innerHTML = license.permissions
           .map((p) => `<li>${p}</li>`)
-          .join("");
+          .join("")
         document.getElementById("license-conditions").innerHTML = license.conditions
           .map((c) => `<li>${c}</li>`)
-          .join("");
+          .join("")
         document.getElementById("license-limitations").innerHTML = license.limitations
           .map((l) => `<li>${l}</li>`)
-          .join("");
-        document.getElementById("license-raw-content").textContent = license.content;
+          .join("")
+        document.getElementById("license-raw-content").textContent = license.content
       }
 
       document.getElementById("license-select").addEventListener("change", async function (event) {
-        const spdxId = event.target.value;
+        const spdxId = event.target.value
         if (!spdxId) {
-          document.getElementById("license-details").style.display = "none";
-          return;
+          document.getElementById("license-details").style.display = "none"
+          return
         }
 
-        window.location.hash = spdxId;
-        await loadLicenseDetails(spdxId);
-        document.getElementById("license-details").style.display = "block";
-      });
+        window.location.hash = spdxId
+        await loadLicenseDetails(spdxId)
+        document.getElementById("license-details").style.display = "block"
+      })
 
       function loadLicenseFromUrlFragment() {
-        const spdxId = window.location.hash.substring(1);
+        const spdxId = window.location.hash.substring(1)
         if (spdxId) {
-          const selectElement = document.getElementById("license-select");
-          const optionElement = Array.from(selectElement.options).find((option) => option.value === spdxId);
+          const selectElement = document.getElementById("license-select")
+          const optionElement = Array.from(selectElement.options).find((option) => option.value === spdxId)
           if (optionElement) {
-            selectElement.value = spdxId;
-            loadLicenseDetails(spdxId);
-            document.getElementById("license-details").style.display = "block";
+            selectElement.value = spdxId
+            loadLicenseDetails(spdxId)
+            document.getElementById("license-details").style.display = "block"
           }
         }
       }
 
-      window.addEventListener("DOMContentLoaded", loadLicenseFromUrlFragment);
+      window.addEventListener("DOMContentLoaded", loadLicenseFromUrlFragment)
 
       function copyToClipboard(text) {
         navigator.clipboard.writeText(text).then(
           () => {
-            console.log("Copied to clipboard successfully.");
+            console.log("Copied to clipboard successfully.")
           },
           () => {
-            console.error("Failed to copy to clipboard.");
+            console.error("Failed to copy to clipboard.")
           }
-        );
+        )
       }
 
       document.querySelectorAll(".copy").forEach((element) => {
         element.addEventListener("click", () => {
-          copyToClipboard(element.textContent);
-        });
-      });
+          copyToClipboard(element.textContent)
+        })
+      })
 
       document.getElementById("copy-license-content").addEventListener("click", () => {
-        const licenseContent = document.getElementById("license-raw-content").textContent;
-        copyToClipboard(licenseContent);
-      });
+        const licenseContent = document.getElementById("license-raw-content").textContent
+        copyToClipboard(licenseContent)
+      })
     </script>
   </body>
 </html>
