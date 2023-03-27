@@ -1,0 +1,9 @@
+version: "3"
+
+services:
+  license_api:
+    image: ghcr.io/nachtalb/licenses_api:latest
+    container_name: license_api
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
