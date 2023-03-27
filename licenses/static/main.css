@@ -20,7 +20,7 @@ body {
   --bs-dropdown-font-size: 0.875rem;
 }
 
-.bi {
+.dropdown .bi {
   width: 1em;
   height: 1em;
 }
@@ -32,4 +32,8 @@ svg path {
 
 #license-curl {
   word-break: break-all;
+}
+
+.copy::before {
+  margin-right: 0.5em;
 }
