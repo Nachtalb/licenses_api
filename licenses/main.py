@@ -35,6 +35,7 @@ def index(request: Request):
             "request": request,
             "licenses": sorted(licenses.values(), key=lambda i: i.spdx_id),
             "current_year": datetime.datetime.now().year,
+            "version": __version__,
         },
     )
 

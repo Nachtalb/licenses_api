@@ -46,7 +46,7 @@ cd license_api
 # Install the dependencies using Poetry
 poetry install
 # Run the FastAPI server
-poetry run uvicorn main:app --reload
+poetry run uvicorn license.main:app --reload
 ```
 
 ## License
