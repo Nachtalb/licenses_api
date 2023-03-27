@@ -49,6 +49,46 @@ poetry install
 poetry run uvicorn license.main:app --reload
 ```
 
+### Installation using Docker
+
+You can also run the application using Docker. There are two methods to do this:
+using the Docker CLI command or using Docker Compose.
+
+### Docker CLI
+
+To run the application using the Docker CLI, execute the following command:
+
+```bash
+docker run --name license_api -p 8000:8000 ghcr.io/nachtalb/licenses_api:latest
+```
+
+The application will be accessible at `http://localhost:8000`.
+
+### Docker Compose
+
+Alternatively, you can use Docker Compose to run the application. Create a file
+named `docker-compose.yml` with the following content:
+
+```yaml
+version: "3"
+
+services:
+  license_api:
+    image: ghcr.io/nachtalb/licenses_api:latest
+    container_name: license_api
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+```
+
+Now, run the following command to start the application using Docker Compose:
+
+```bash
+docker-compose up -d
+```
+
+The application will be accessible at `http://localhost:8000`.
+
 ## License
 
 This project is licensed under the
