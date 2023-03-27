@@ -5,6 +5,7 @@ __version__ = "0.1.0"
 __repository__ = "https://github.com/Nachtalb/licenses_api"
 __license__ = "LGPL 3.0"
 
+import datetime
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, Request
@@ -29,7 +30,12 @@ def index(request: Request):
     for users to explore and interact with the available software licenses.
     """
     return templates.TemplateResponse(
-        "index.html", {"request": request, "licenses": sorted(licenses.values(), key=lambda i: i.spdx_id)}
+        "index.html",
+        {
+            "request": request,
+            "licenses": sorted(licenses.values(), key=lambda i: i.spdx_id),
+            "current_year": datetime.datetime.now().year,
+        },
     )
 
 
