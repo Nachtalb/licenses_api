@@ -10,8 +10,22 @@ readme = "README.md"
 python = "^3.11"
 uvicorn = {extras = ["standard"], version = "^0.21.1"}
 fastapi = "^0.95.0"
+ruamel-yaml = "^0.17.21"
+pydantic = "^1.10.7"
 
+
+[tool.poetry.group.dev.dependencies]
+ipdb = "^0.13.13"
+ipython = {extras = ["black"], version = "^8.11.0"}
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+serve = "uvicorn licenses.main:app"
+
+[tool.black]
+line-length = 120
+target-version = ['py311']
+preview = true
