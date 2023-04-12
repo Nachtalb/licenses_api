@@ -1,7 +1,7 @@
 __author__ = "Nachtalb <na@nachtalb.io>"
 __maintainer__ = "Nachtalb"
 __email__ = "na@nachtalb.io"
-__version__ = "0.2.1-dev0"
+__version__ = "0.2.1"
 __repository__ = "https://github.com/Nachtalb/licenses_api"
 __license__ = "LGPL 3.0"
 

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "licenses"
-version = "0.2.1-dev0"
+version = "0.2.1"
 description = "Small website to provide and overview and API for software licenses."
 authors = ["Nachtalb <na@nachtalb.io>"]
 license = "LGPL-3.0"
