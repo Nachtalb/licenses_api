@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Software Licenses</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f8f9fa;
+      --bg-sidebar: #ffffff;
+      --bg-card: #ffffff;
+      --bg-code: #f1f3f5;
+      --text: #1a1a2e;
+      --text-muted: #6b7280;
+      --border: #e5e7eb;
+      --accent: #4f46e5;
+      --accent-hover: #4338ca;
+      --pill-perm-bg: #d1fae5;
+      --pill-perm-text: #065f46;
+      --pill-cond-bg: #fef3c7;
+      --pill-cond-text: #92400e;
+      --pill-lim-bg: #fee2e2;
+      --pill-lim-text: #991b1b;
+      --shadow: 0 1px 3px rgba(0,0,0,0.08);
+      --radius: 8px;
+      --sidebar-w: 300px;
+      --search-bg: #f1f3f5;
+      --badge-bg: #e0e7ff;
+      --badge-text: #3730a3;
+      --hover-bg: #f3f4f6;
+      --active-bg: #e0e7ff;
+    }
+
+    [data-theme="dark"] {
+      --bg: #0f172a;
+      --bg-sidebar: #1e293b;
+      --bg-card: #1e293b;
+      --bg-code: #0f172a;
+      --text: #e2e8f0;
+      --text-muted: #94a3b8;
+      --border: #334155;
+      --accent: #818cf8;
+      --accent-hover: #a5b4fc;
+      --pill-perm-bg: #064e3b;
+      --pill-perm-text: #6ee7b7;
+      --pill-cond-bg: #78350f;
+      --pill-cond-text: #fcd34d;
+      --pill-lim-bg: #7f1d1d;
+      --pill-lim-text: #fca5a5;
+      --shadow: 0 1px 3px rgba(0,0,0,0.3);
+      --search-bg: #0f172a;
+      --badge-bg: #312e81;
+      --badge-text: #c7d2fe;
+      --hover-bg: #334155;
+      --active-bg: #312e81;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: var(--sidebar-w);
+      min-width: var(--sidebar-w);
+      background: var(--bg-sidebar);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      position: sticky;
+      top: 0;
+      overflow: hidden;
+    }
+
+    .sidebar-header {
+      padding: 20px 16px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .sidebar-header h1 {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .theme-toggle {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--text);
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 16px;
+      transition: background 0.15s;
+    }
+    .theme-toggle:hover { background: var(--hover-bg); }
+
+    .search-box {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--search-bg);
+      color: var(--text);
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .search-box:focus { border-color: var(--accent); }
+    .search-box::placeholder { color: var(--text-muted); }
+
+    .license-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px;
+    }
+
+    .list-section {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      padding: 8px 8px 4px;
+    }
+
+    .license-item {
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: background 0.1s;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .license-item:hover { background: var(--hover-bg); }
+    .license-item.active { background: var(--active-bg); font-weight: 600; }
+
+    .license-item .spdx {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-left: 4px;
+    }
+
+    /* Main content */
+    .main {
+      flex: 1;
+      padding: 32px 48px;
+      max-width: 900px;
+      overflow-y: auto;
+      height: 100vh;
+    }
+
+    .empty-state {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      color: var(--text-muted);
+      font-size: 16px;
+    }
+
+    .license-title {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .spdx-badge {
+      font-size: 13px;
+      font-weight: 600;
+      background: var(--badge-bg);
+      color: var(--badge-text);
+      padding: 3px 10px;
+      border-radius: 20px;
+    }
+
+    .description {
+      font-size: 15px;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+      line-height: 1.7;
+    }
+
+    .section {
+      margin-bottom: 24px;
+    }
+
+    .section-title {
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .section-text {
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .pill {
+      font-size: 12px;
+      font-weight: 500;
+      padding: 4px 10px;
+      border-radius: 20px;
+      text-transform: capitalize;
+    }
+
+    .pill-perm { background: var(--pill-perm-bg); color: var(--pill-perm-text); }
+    .pill-cond { background: var(--pill-cond-bg); color: var(--pill-cond-text); }
+    .pill-lim { background: var(--pill-lim-bg); color: var(--pill-lim-text); }
+
+    .attrs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .attr-group h3 {
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 8px;
+    }
+    .attr-group.perms h3 { color: var(--pill-perm-text); }
+    .attr-group.conds h3 { color: var(--pill-cond-text); }
+    .attr-group.lims h3 { color: var(--pill-lim-text); }
+
+    .attr-group ul {
+      list-style: none;
+      font-size: 13px;
+    }
+    .attr-group ul li {
+      padding: 3px 0;
+      text-transform: capitalize;
+    }
+    .attr-group ul li::before {
+      margin-right: 6px;
+      font-size: 11px;
+    }
+    .attr-group.perms ul li::before { content: "✓"; color: var(--pill-perm-text); }
+    .attr-group.conds ul li::before { content: "●"; color: var(--pill-cond-text); }
+    .attr-group.lims ul li::before { content: "✗"; color: var(--pill-lim-text); }
+
+    .license-text-container {
+      position: relative;
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: var(--bg-sidebar);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+      transition: all 0.15s;
+      z-index: 1;
+    }
+    .copy-btn:hover { color: var(--text); border-color: var(--accent); }
+    .copy-btn.copied { color: var(--pill-perm-text); border-color: var(--pill-perm-text); }
+
+    .license-text {
+      background: var(--bg-code);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', Consolas, monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      overflow-x: auto;
+      max-height: 500px;
+      overflow-y: auto;
+    }
+
+    .using-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .using-link {
+      font-size: 13px;
+      color: var(--accent);
+      text-decoration: none;
+      padding: 4px 10px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      transition: all 0.15s;
+    }
+    .using-link:hover {
+      border-color: var(--accent);
+      background: var(--active-bg);
+    }
+
+    /* Mobile hamburger */
+    .hamburger {
+      display: none;
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 1000;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-size: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      z-index: 99;
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        position: fixed;
+        left: -100%;
+        top: 0;
+        z-index: 100;
+        width: 280px;
+        min-width: 280px;
+        transition: left 0.25s ease;
+        box-shadow: var(--shadow);
+      }
+      .sidebar.open { left: 0; }
+      .overlay.open { display: block; }
+      .hamburger { display: flex; }
+      .main { padding: 20px 16px; max-width: 100%; }
+      .license-title { font-size: 22px; }
+      .attrs-grid { grid-template-columns: 1fr; }
+    }
+
+    /* Footer */
+    .footer {
+      margin-top: 48px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .footer a { color: var(--accent); text-decoration: none; }
+    .footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <h1>
+        Licenses
+        <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Toggle theme">🌙</button>
+      </h1>
+      <input type="text" class="search-box" id="search" placeholder="Search licenses..." oninput="filterList()">
+    </div>
+    <div class="license-list" id="licenseList"></div>
+  </aside>
+
+  <main class="main" id="main">
+    <div class="empty-state" id="emptyState">← Select a license to view details</div>
+    <div id="licenseDetail" style="display:none"></div>
+  </main>
+
+  <button class="hamburger" id="hamburger" onclick="toggleSidebar()">☰</button>
+
+  <script>
+    let licenses = [];
+    let currentId = null;
+
+    // Theme
+    function getPreferredTheme() {
+      const stored = localStorage.getItem('theme');
+      if (stored) return stored;
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+
+    function applyTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      document.getElementById('themeToggle').textContent = theme === 'dark' ? '☀️' : '🌙';
+      localStorage.setItem('theme', theme);
+    }
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme');
+      applyTheme(current === 'dark' ? 'light' : 'dark');
+    }
+
+    applyTheme(getPreferredTheme());
+
+    // Mobile sidebar
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('open');
+      document.getElementById('overlay').classList.toggle('open');
+    }
+
+    // Format attribute names
+    function formatAttr(s) {
+      return s.replace(/-/g, ' ');
+    }
+
+    // Render license list
+    function renderList(filter = '') {
+      const list = document.getElementById('licenseList');
+      const lower = filter.toLowerCase();
+      const featured = licenses.filter(l => l.featured && (lower === '' || l.title.toLowerCase().includes(lower) || l.spdx_id.toLowerCase().includes(lower)));
+      const rest = licenses.filter(l => !l.featured && (lower === '' || l.title.toLowerCase().includes(lower) || l.spdx_id.toLowerCase().includes(lower)));
+
+      let html = '';
+      if (featured.length > 0) {
+        html += '<div class="list-section">Featured</div>';
+        for (const l of featured) {
+          html += `<div class="license-item${currentId === l.spdx_id ? ' active' : ''}" onclick="showLicense('${l.spdx_id}')">${l.title} <span class="spdx">${l.spdx_id}</span></div>`;
+        }
+      }
+      if (rest.length > 0) {
+        html += '<div class="list-section">All Licenses</div>';
+        for (const l of rest) {
+          html += `<div class="license-item${currentId === l.spdx_id ? ' active' : ''}" onclick="showLicense('${l.spdx_id}')">${l.title} <span class="spdx">${l.spdx_id}</span></div>`;
+        }
+      }
+      if (featured.length === 0 && rest.length === 0) {
+        html += '<div style="padding:16px;color:var(--text-muted);font-size:13px;">No licenses found</div>';
+      }
+      list.innerHTML = html;
+    }
+
+    function filterList() {
+      renderList(document.getElementById('search').value);
+    }
+
+    // Show license detail
+    function showLicense(spdxId) {
+      const l = licenses.find(x => x.spdx_id === spdxId);
+      if (!l) return;
+
+      currentId = spdxId;
+      renderList(document.getElementById('search').value);
+
+      document.getElementById('emptyState').style.display = 'none';
+      const detail = document.getElementById('licenseDetail');
+      detail.style.display = 'block';
+
+      let html = `
+        <div class="license-title">${l.title} <span class="spdx-badge">${l.spdx_id}</span></div>
+        <p class="description">${l.description}</p>
+      `;
+
+      // Attributes grid
+      const hasAttrs = l.permissions.length || l.conditions.length || l.limitations.length;
+      if (hasAttrs) {
+        html += '<div class="attrs-grid">';
+        if (l.permissions.length) {
+          html += '<div class="attr-group perms"><h3>Permissions</h3><ul>' +
+            l.permissions.map(p => `<li>${formatAttr(p)}</li>`).join('') + '</ul></div>';
+        }
+        if (l.conditions.length) {
+          html += '<div class="attr-group conds"><h3>Conditions</h3><ul>' +
+            l.conditions.map(c => `<li>${formatAttr(c)}</li>`).join('') + '</ul></div>';
+        }
+        if (l.limitations.length) {
+          html += '<div class="attr-group lims"><h3>Limitations</h3><ul>' +
+            l.limitations.map(li => `<li>${formatAttr(li)}</li>`).join('') + '</ul></div>';
+        }
+        html += '</div>';
+      }
+
+      // How to apply
+      if (l.how) {
+        html += `<div class="section"><div class="section-title">How to Apply</div><p class="section-text">${l.how}</p></div>`;
+      }
+
+      // Note
+      if (l.note) {
+        html += `<div class="section"><div class="section-title">Note</div><p class="section-text">${l.note}</p></div>`;
+      }
+
+      // Used by
+      if (l.using && Object.keys(l.using).length > 0) {
+        html += '<div class="section"><div class="section-title">Used By</div><div class="using-list">';
+        for (const [name, url] of Object.entries(l.using)) {
+          html += `<a href="${url}" target="_blank" rel="noopener" class="using-link">${name}</a>`;
+        }
+        html += '</div></div>';
+      }
+
+      // License text
+      html += `
+        <div class="section">
+          <div class="section-title">Full License Text</div>
+          <div class="license-text-container">
+            <button class="copy-btn" onclick="copyText(this)">Copy</button>
+            <pre class="license-text">${escapeHtml(l.content)}</pre>
+          </div>
+        </div>
+      `;
+
+      html += `<div class="footer">License data sourced from <a href="https://choosealicense.com">choosealicense.com</a>. Source: <a href="https://github.com/Nachtalb/licenses_api">GitHub</a>.</div>`;
+
+      detail.innerHTML = html;
+      detail.scrollTop = 0;
+      document.getElementById('main').scrollTop = 0;
+
+      // Close sidebar on mobile
+      if (window.innerWidth <= 768) {
+        document.getElementById('sidebar').classList.remove('open');
+        document.getElementById('overlay').classList.remove('open');
+      }
+
+      // Update URL hash
+      history.replaceState(null, '', '#' + spdxId);
+    }
+
+    function escapeHtml(s) {
+      return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    async function copyText(btn) {
+      const pre = btn.parentElement.querySelector('.license-text');
+      try {
+        await navigator.clipboard.writeText(pre.textContent);
+        btn.textContent = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+      } catch {
+        btn.textContent = 'Failed';
+        setTimeout(() => { btn.textContent = 'Copy'; }, 2000);
+      }
+    }
+
+    // Load data
+    fetch('data/licenses.json')
+      .then(r => r.json())
+      .then(data => {
+        licenses = data;
+        renderList();
+
+        // Check URL hash
+        const hash = location.hash.slice(1);
+        if (hash && licenses.find(l => l.spdx_id === hash)) {
+          showLicense(hash);
+        }
+      })
+      .catch(err => {
+        document.getElementById('emptyState').textContent = 'Failed to load license data. Run: python3 scripts/fetch_licenses.py';
+      });
+
+    // Keyboard shortcut
+    document.addEventListener('keydown', e => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        document.getElementById('search').focus();
+      }
+    });
+  </script>
+</body>
+</html>

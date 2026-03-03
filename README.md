@@ -1,95 +1,42 @@
-# Software License API
+# Software License Browser
 
-This project is a FastAPI implementation that provides an interactive interface
-for users to explore and interact with various software licenses. The license
-files are sourced from
-[choosealicense.com](https://github.com/github/choosealicense.com), and the
-author of this project is [Nachtalb](https://github.com/Nachtalb).
+A simple static site for browsing and exploring open source software licenses.
 
-The source repository for this project can be found at
-[https://github.com/Nachtalb/licenses_api](https://github.com/Nachtalb/licenses_api).
+License data sourced from [choosealicense.com](https://github.com/github/choosealicense.com).
 
-## Website and API Documentation
+## Live
 
-You can access the website for this application at
-[https://licenses.nachtalb.io](https://licenses.nachtalb.io).
+[l.naa.gg](https://l.naa.gg)
 
-The API documentation is available at
-[https://licenses.nachtalb.io/docs](https://licenses.nachtalb.io/docs).
+## Usage
 
-### Short Overview of the API Endpoints
-
-The following API endpoints are available:
-
-1. `GET /` - Serve the website's front page, which provides an interactive
-   interface for users to explore and interact with the available software
-   licenses.
-
-2. `GET /licenses` - Retrieve a list of all available software licenses.
-
-3. `GET /licenses/{spdx_id}` - Retrieve a specific software license by its SPDX
-   ID.
-
-4. `GET /licenses/{spdx_id}/raw` - Retrieve the raw content of a specific
-   software license by its SPDX ID.
-
-## Installation
-
-The installation is done using [Poetry](https://python-poetry.org/). To install
-the project, follow these steps:
+### Fetch license data
 
 ```bash
-# Clone the repository
-git clone https://github.com/Nachtalb/license_api.git
-# Navigate to the project directory
-cd license_api
-# Install the dependencies using Poetry
-poetry install
-# Run the FastAPI server
-poetry run uvicorn license.main:app --reload
+python3 scripts/fetch_licenses.py
 ```
 
-### Installation using Docker
+This downloads all license files from GitHub and generates `data/licenses.json`.
 
-You can also run the application using Docker. There are two methods to do this:
-using the Docker CLI command or using Docker Compose.
-
-### Docker CLI
-
-To run the application using the Docker CLI, execute the following command:
+### Serve locally
 
 ```bash
-docker run --name license_api -p 8000:8000 ghcr.io/nachtalb/licenses_api:latest
+./serve.sh
+# or
+python3 -m http.server 8000
 ```
 
-The application will be accessible at `http://localhost:8000`.
+Then open [http://localhost:8000](http://localhost:8000).
 
-### Docker Compose
+## Features
 
-Alternatively, you can use Docker Compose to run the application. Create a file
-named `docker-compose.yml` with the following content:
-
-```yaml
-version: "3"
-
-services:
-  license_api:
-    image: ghcr.io/nachtalb/licenses_api:latest
-    container_name: license_api
-    ports:
-      - "8000:8000"
-    restart: unless-stopped
-```
-
-Now, run the following command to start the application using Docker Compose:
-
-```bash
-docker-compose up -d
-```
-
-The application will be accessible at `http://localhost:8000`.
+- Dark/light theme (follows system preference)
+- Search/filter licenses
+- Permissions, conditions, and limitations at a glance
+- Copy license text to clipboard
+- Fully responsive
+- Zero dependencies — vanilla HTML/CSS/JS
 
 ## License
 
-This project is licensed under the
-[GNU Lesser General Public License v3.0](https://www.gnu.org/licenses/lgpl-3.0.en.html).
+[LGPL-3.0](https://www.gnu.org/licenses/lgpl-3.0.en.html)
