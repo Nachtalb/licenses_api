@@ -7,8 +7,10 @@ build/
 .venv/
 venv/
 
-# Raw license files (fetched, not committed)
+# Raw license source files (fetched, not committed)
 data/licenses/*.txt
+
+# Public license text files are committed (licenses/*.txt)
 
 # IDE
 .idea/

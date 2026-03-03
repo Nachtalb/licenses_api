@@ -525,16 +525,33 @@
         html += '</div></div>';
       }
 
-      // License text
+      // License text (loaded on demand from file)
       html += `
         <div class="section">
           <div class="section-title">Full License Text</div>
           <div class="license-text-container">
             <button class="copy-btn" onclick="copyText(this)">Copy</button>
-            <pre class="license-text">${escapeHtml(l.content)}</pre>
+            <pre class="license-text" id="license-content">Loading...</pre>
+          </div>
+          <div style="margin-top:8px;font-size:12px;color:var(--text-muted)">
+            <code>curl ${location.origin}/${l.file}</code>
           </div>
         </div>
       `;
+
+      // Fetch license text
+      if (l.file) {
+        fetch(l.file)
+          .then(r => r.text())
+          .then(text => {
+            const el = document.getElementById('license-content');
+            if (el) el.textContent = text;
+          })
+          .catch(() => {
+            const el = document.getElementById('license-content');
+            if (el) el.textContent = 'Failed to load license text.';
+          });
+      }
 
       html += `<div class="footer">License data sourced from <a href="https://choosealicense.com">choosealicense.com</a>. Source: <a href="https://github.com/Nachtalb/licenses_api">GitHub</a>.</div>`;
 

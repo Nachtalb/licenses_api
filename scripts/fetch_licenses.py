@@ -11,6 +11,8 @@ REPO_API = "https://api.github.com/repos/github/choosealicense.com/contents/_lic
 DATA_DIR = Path(__file__).parent.parent / "data"
 LICENSES_DIR = DATA_DIR / "licenses"
 OUTPUT = DATA_DIR / "licenses.json"
+# Raw license text files served for curl access
+PUBLIC_LICENSES_DIR = Path(__file__).parent.parent / "licenses"
 
 
 def fetch_file_list():
@@ -115,8 +117,10 @@ def process_license(meta: dict, content: str) -> dict | None:
     if meta.get("hidden", False):
         return None
 
+    spdx = meta.get("spdx-id", "")
+    filename = spdx.lower() + ".txt" if spdx else ""
     return {
-        "spdx_id": meta.get("spdx-id", ""),
+        "spdx_id": spdx,
         "title": meta.get("title", ""),
         "nickname": meta.get("nickname"),
         "description": meta.get("description", ""),
@@ -126,7 +130,7 @@ def process_license(meta: dict, content: str) -> dict | None:
         "permissions": meta.get("permissions", []),
         "conditions": meta.get("conditions", []),
         "limitations": meta.get("limitations", []),
-        "content": content,
+        "file": f"licenses/{filename}",
         "hidden": meta.get("hidden", False),
         "featured": meta.get("featured", False),
     }
@@ -134,6 +138,7 @@ def process_license(meta: dict, content: str) -> dict | None:
 
 def main():
     LICENSES_DIR.mkdir(parents=True, exist_ok=True)
+    PUBLIC_LICENSES_DIR.mkdir(parents=True, exist_ok=True)
 
     print("Fetching file list from GitHub...")
     files = fetch_file_list()
@@ -145,7 +150,7 @@ def main():
         name = f["name"]
         print(f"  [{i}/{len(txt_files)}] {name}")
 
-        # Download and save raw file
+        # Download and save raw source file
         raw = download_file(f["download_url"])
         (LICENSES_DIR / name).write_text(raw)
 
@@ -154,6 +159,8 @@ def main():
         license_data = process_license(meta, content)
         if license_data:
             licenses.append(license_data)
+            # Write plain license text for curl access
+            (PUBLIC_LICENSES_DIR / name).write_text(content + "\n")
 
     # Sort by title
     licenses.sort(key=lambda x: x["title"].lower())
