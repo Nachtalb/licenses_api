@@ -170,6 +170,19 @@
       height: 100%;
       color: var(--text-muted);
       font-size: 16px;
+      text-align: center;
+    }
+    .empty-state-content { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+    .empty-icon { font-size: 48px; margin-bottom: 8px; opacity: 0.5; }
+    .empty-hint-mobile { display: none; font-size: 14px; margin-top: 4px; }
+    .empty-btn-hint {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 28px; height: 28px; border-radius: 50%;
+      background: var(--accent); color: white; font-size: 14px;
+      vertical-align: middle;
+    }
+    @media (max-width: 768px) {
+      .empty-hint-mobile { display: block; }
     }
 
     .license-title {
@@ -399,7 +412,13 @@
   </aside>
 
   <main class="main" id="main">
-    <div class="empty-state" id="emptyState">← Select a license to view details</div>
+    <div class="empty-state" id="emptyState">
+      <div class="empty-state-content">
+        <div class="empty-icon">📄</div>
+        <div>Select a license to view details</div>
+        <div class="empty-hint-mobile">Tap the <span class="empty-btn-hint">☰</span> button to browse licenses</div>
+      </div>
+    </div>
     <div id="licenseDetail" style="display:none"></div>
   </main>
 
